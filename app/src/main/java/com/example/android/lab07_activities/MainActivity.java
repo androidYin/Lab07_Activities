@@ -13,12 +13,15 @@ public class MainActivity extends AppCompatActivity {
     private static final int SELECT_COLOR_REQUEST = 0;
     private static final int EDIT_TEXT_REQUEST = 1;
 
+    private int m_color = 0xFFFFFFFF; // 紀錄選了什麼顏色
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
 
+    // 按下 選擇顏色
     public void selectColor(View view) {
         // 建立傳令兵
         // new Intent( 發送者 , 接收者 )
@@ -26,11 +29,11 @@ public class MainActivity extends AppCompatActivity {
 
 //        startActivity(intent); // 單純切畫面，沒有要結果
 
-        // 啟動另一個 Activity ， 設定 傳令兵 與 請求碼
+        // 啟動另一個 Activity 能傳回執行結果， 須設定 傳令兵(intent) 與 請求碼(request_code)
         startActivityForResult(intent, SELECT_COLOR_REQUEST);
     }
 
-
+    // 按下 輸入文字
     public void editText(View view) {
         // 建立傳令兵
         // new Intent( 發送者 , 接收者 )
@@ -39,6 +42,16 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, EDIT_TEXT_REQUEST);
     }
 
+    // 按下 NEXT (切下一個畫面 Activit1)
+    public void next(View view) {
+        Intent intent = new Intent(this, Activity1.class);
+        // 將所選的顏色放到 intent 裡
+        intent.putExtra(ColorPickerActivity.BUNDLE_KEY_COLOR_INT, m_color);
+        startActivity(intent);
+    }
+
+    // 接收另一個 Activity 執行 setResult() 傳回結果
+    // android system 收到結果會呼叫 onActivityResult()
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // 判斷哪個請求傳來的結果
@@ -48,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 Bundle bundle = data.getExtras();
 
                 // 從包裹拿出 Int 資料， 需提供資料的 key
-                int colorInt = bundle.getInt(ColorPickerActivity.BUNDLE_KEY_COLOR_INT);
+                m_color = bundle.getInt(ColorPickerActivity.BUNDLE_KEY_COLOR_INT);
                 CharSequence colorName = bundle.getCharSequence(ColorPickerActivity.BUNDLE_KEY_COLOR_NAME);
 
                 // 從包裹拿出 CharSequence 資料， 需提供資料的 key
@@ -58,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // 變更 ScrollView 背景顏色
                 ScrollView scrollView = (ScrollView)findViewById(R.id.scroll_view);
-                scrollView.setBackgroundColor(colorInt);
+                scrollView.setBackgroundColor(m_color);
 
             }
         } else if(requestCode == EDIT_TEXT_REQUEST) {
@@ -75,13 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
-    }
-
-
-
-    public void next(View view) {
-        Intent intent = new Intent(this, Activity1.class);
-        startActivity(intent);
     }
 
 }

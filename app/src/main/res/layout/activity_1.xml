@@ -24,4 +24,11 @@
         android:onClick="next"
         android:text="NEXT" />
 
+    <TextView
+        android:id="@+id/tv_main_activity_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="MainActivity 傳來的資料"
+        android:textAppearance="@android:style/TextAppearance.Large"/>
+
 </LinearLayout>
