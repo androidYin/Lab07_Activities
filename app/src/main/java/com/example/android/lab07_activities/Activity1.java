@@ -46,11 +46,17 @@ public class Activity1 extends AppCompatActivity {
 
         // 建立新 Intent: new Intent( 來源 , 目的)
         Intent intent = new Intent(this, Activity2.class);
+        intent.putExtra(Q1_ANSWER_KEY, m_answer);
         startActivity(intent);
 
         // overridePendingTransition( 進場效果 , 出場效果 )
         overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
 
+    }
+
+    // 按下 RadioButton
+    public void click(View view) {
+        m_answer = view.getTag().toString();
     }
 
 }
