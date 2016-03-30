@@ -39,30 +39,18 @@ public class Activity1 extends AppCompatActivity {
         m_radio_a.setText(Html.fromHtml(getString(R.string.question_1_radio_a)));
         m_radio_b.setText(Html.fromHtml(getString(R.string.question_1_radio_b)));
         m_radio_c.setText(Html.fromHtml(getString(R.string.question_1_radio_c)));
-
-        initBackgroundColor();
-
     }
 
-    private void initBackgroundColor() {
-        int color = getIntent().getIntExtra(ColorPickerActivity.BUNDLE_KEY_COLOR_INT, -1);
-        if(color == -1) {
-            return;
-        }
-        m_tv_question.setBackgroundColor(color);
-    }
-
-
+    // 按下 NEXT
     public void next(View view) {
 
-        String packageName = Activity2.class.getPackage().getName();
-        String className = Activity2.class.getName();
-        Intent intent = getIntent().setClassName(packageName, className);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        intent.putExtra(Q1_ANSWER_KEY, m_answer);
-        intent.putExtra("from","1");
+        // 建立新 Intent: new Intent( 來源 , 目的)
+        Intent intent = new Intent(this, Activity2.class);
         startActivity(intent);
-    }
 
+        // overridePendingTransition( 進場效果 , 出場效果 )
+        overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+
+    }
 
 }

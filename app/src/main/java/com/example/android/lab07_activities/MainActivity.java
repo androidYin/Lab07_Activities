@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         // 將所選的顏色放到 intent 裡
         intent.putExtra(ColorPickerActivity.BUNDLE_KEY_COLOR_INT, m_color);
         startActivity(intent);
+
     }
 
     // 接收另一個 Activity 執行 setResult() 傳回結果
