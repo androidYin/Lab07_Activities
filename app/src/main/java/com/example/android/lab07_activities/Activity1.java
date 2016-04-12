@@ -3,7 +3,6 @@ package com.example.android.lab07_activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -34,11 +33,16 @@ public class Activity1 extends AppCompatActivity {
         m_radio_b = (RadioButton)findViewById(R.id.radio_b);
         m_radio_c = (RadioButton)findViewById(R.id.radio_c);
 
-        m_tv_no.setText("1");
-        m_tv_question.setText(Html.fromHtml(getString(R.string.question_1)));
-        m_radio_a.setText(Html.fromHtml(getString(R.string.question_1_radio_a)));
-        m_radio_b.setText(Html.fromHtml(getString(R.string.question_1_radio_b)));
-        m_radio_c.setText(Html.fromHtml(getString(R.string.question_1_radio_c)));
+        int index = 0; // 第1題
+        String no = String.valueOf(index+1);
+        m_tv_no.setText(no);
+
+        // 透過工廠取得 adapter
+        QuestionAdapter adapter = QuestionAdapterFactory.getQuestionAdapter();
+        m_tv_question.setText(adapter.getQuestion(index));
+        m_radio_a.setText(adapter.getQuestionOptionsA(index));
+        m_radio_b.setText(adapter.getQuestionOptionsB(index));
+        m_radio_c.setText(adapter.getQuestionOptionsC(index));
     }
 
     // 按下 NEXT
