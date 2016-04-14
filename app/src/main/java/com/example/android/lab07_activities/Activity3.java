@@ -1,7 +1,5 @@
 package com.example.android.lab07_activities;
 
-import android.view.View;
-
 public class Activity3 extends QuestionActivity {
 
     @Override
@@ -22,12 +20,12 @@ public class Activity3 extends QuestionActivity {
 
     @Override
     protected int getBackButtonVisibility() {
-        return View.VISIBLE;
+        return QuestionActivity.VISIBLE;
     }
 
     @Override
     protected int getNextButtonVisibility() {
-        return View.VISIBLE;
+        return QuestionActivity.VISIBLE;
     }
 
 }

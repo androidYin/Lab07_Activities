@@ -2,7 +2,9 @@ package com.example.android.lab07_activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -10,7 +12,6 @@ import android.widget.TextView;
 
 // abstract activity 不需要宣告在 manifest
 public abstract class QuestionActivity extends AppCompatActivity {
-
     private TextView m_tv_no;
     private TextView m_tv_question;
     private RadioButton m_radio_a;
@@ -20,6 +21,7 @@ public abstract class QuestionActivity extends AppCompatActivity {
     private Button m_btn_back;
     private Button m_btn_next;
 
+    private static int sLastQuestionIndex;   // 上個畫面的 index
     private static int sQuestionIndex = 0;   // 只需要一個 index，所以宣告為靜態
     private static QuestionAdapter sAdapter; // 只需要一個 adapter，所以宣告為靜態
 
@@ -29,6 +31,7 @@ public abstract class QuestionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_question);
         initQuestions();
         initBackNextButtons();
+        Log.d(this.toString(), "onCreate , index = " + sQuestionIndex);
     }
 
      // 抑制 setVisibility() 錯誤訊息
@@ -67,27 +70,29 @@ public abstract class QuestionActivity extends AppCompatActivity {
 
     // 按下 BACK
     public void back(View view) {
-        sQuestionIndex--;
+        sLastQuestionIndex = sQuestionIndex; // 準備要切換到前一個 Activity，備份目前 index
+        sQuestionIndex--;  // 1
         // 建立新 Intent: new Intent( 來源 , 目的)
         Intent intent = new Intent(this, getBackActivityClass());
         // 將先前的 Acvivity 移到最上層，而非產生新的 Activity
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
         // overridePendingTransition( 進場效果 , 出場效果 )
-        overridePendingTransition(R.anim.push_left_in, R.anim.push_right_out);
+        // overridePendingTransition(R.anim.push_left_in, R.anim.push_right_out);
     }
 
     // 按下 NEXT
     public void next(View view) {
+        sLastQuestionIndex = sQuestionIndex; // 準備要切換到前一個 Activity，備份目前 index
         sQuestionIndex++;
         // 建立新 Intent: new Intent( 來源 , 目的)
         Intent intent = new Intent(this, getNextActivityClass());
         // 將先前的 Acvivity 移到最上層，而非產生新的 Activity
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
 
         // overridePendingTransition( 進場效果 , 出場效果 )
-        overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+        // overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
     }
 
     // 設定 Back 按鈕文字
@@ -105,10 +110,49 @@ public abstract class QuestionActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() { // 當按下返回鍵
+        return; // 直接返回不處理
+    }
+
+    @Override
+    protected void onPause() { // 當畫面暫時離開
+        super.onPause();
+        Log.d(this.toString(), "onPause , index = " + sQuestionIndex);
+
+    }
+
+    @Override
+    protected void onResume() { // 當畫面恢復(重現)，執行轉場動畫
+        super.onResume();
+        Log.d(this.toString(), "onResume , index = " + sQuestionIndex);
+        if(sQuestionIndex < sLastQuestionIndex) { // 比較當前的 index 與 上個 Activity 的 index
+            overridePendingTransition(R.anim.push_left_in, R.anim.push_right_out);
+        } else if(sQuestionIndex > sLastQuestionIndex) {
+            overridePendingTransition(R.anim.push_right_in, R.anim.push_left_out);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(this.toString(), "onDestroy , index = " + sQuestionIndex);
+    }
+
     // 子類別實現以下功能
     protected abstract Class getBackActivityClass(); // 切換下個畫面的 Activity.class
     protected abstract Class getNextActivityClass(); // 切換上個畫面的 Activity.class
-    protected abstract int getBackButtonVisibility(); // Back 按鈕是否能被看見
-    protected abstract int getNextButtonVisibility(); // Next 按鈕是否能被看見
+    protected abstract @Visibility int getBackButtonVisibility(); // Back 按鈕是否能被看見
+    protected abstract @Visibility int getNextButtonVisibility(); // Next 按鈕是否能被看見
+
+    // @Visibility 返回的 int 只能是 View.VISIBLE View.INVISIBLE View.GONE 其中之一
+    public static final int VISIBLE = View.VISIBLE;
+    public static final int INVISIBLE = View.INVISIBLE;
+    public static final int GONE = View.GONE;
+
+    @IntDef({VISIBLE, INVISIBLE, GONE})
+    public @interface Visibility {
+    }
+
 
 }
