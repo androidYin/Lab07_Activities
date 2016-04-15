@@ -1,4 +1,4 @@
-package com.example.android.lab07_activities;
+package com.example.android.lab07_activities.model;
 
 public class Question {
     private String question;

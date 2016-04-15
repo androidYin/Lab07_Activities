@@ -1,8 +1,5 @@
-package com.example.android.lab07_activities;
+package com.example.android.lab07_activities.adapter;
 
-/**
- * Created by teacher on 2016/4/12.
- */
 public interface QuestionAdapter { // 轉接器
     int getQuestionCount();
     CharSequence getQuestion(int index);

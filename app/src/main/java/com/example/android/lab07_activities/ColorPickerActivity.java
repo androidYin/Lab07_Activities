@@ -50,4 +50,6 @@ public class ColorPickerActivity extends AppCompatActivity {
         setResult(RESULT_CANCELED);
         finish();
     }
+
+
 }

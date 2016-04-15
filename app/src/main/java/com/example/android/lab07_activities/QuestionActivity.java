@@ -10,6 +10,11 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.example.android.lab07_activities.adapter.QuestionAdapter;
+import com.example.android.lab07_activities.adapter.QuestionAdapterFactory;
+import com.example.android.lab07_activities.model.UserAnswers;
+import com.example.android.lab07_activities.myapp.MyApp;
+
 // abstract activity 不需要宣告在 manifest
 public abstract class QuestionActivity extends AppCompatActivity {
     private TextView m_tv_no;
@@ -107,19 +112,27 @@ public abstract class QuestionActivity extends AppCompatActivity {
 
     // 按下 RadioButton 按鈕
     public void click(View view) {
-
+        RadioButton radio = (RadioButton)view;
+        UserAnswers userAnswers = MyApp.getUserAnswers();
+        switch (radio.getId()) {
+            case R.id.radio_a:
+                userAnswers.setAnswer(sQuestionIndex, 'A', radio.getText());
+                Log.d("QuestionActivity", "questionIndex=" + sLastQuestionIndex + " 選了 A");
+                break;
+            case R.id.radio_b:
+                userAnswers.setAnswer(sQuestionIndex, 'B', radio.getText());
+                Log.d("QuestionActivity", "questionIndex=" + sLastQuestionIndex + " 選了 B");
+                break;
+            case R.id.radio_c:
+                userAnswers.setAnswer(sQuestionIndex, 'C', radio.getText());
+                Log.d("QuestionActivity", "questionIndex=" + sLastQuestionIndex + " 選了 C");
+                break;
+        }
     }
 
     @Override
     public void onBackPressed() { // 當按下返回鍵
         return; // 直接返回不處理
-    }
-
-    @Override
-    protected void onPause() { // 當畫面暫時離開
-        super.onPause();
-        Log.d(this.toString(), "onPause , index = " + sQuestionIndex);
-
     }
 
     @Override
@@ -134,9 +147,40 @@ public abstract class QuestionActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(this.toString(), "onStart , index = " + sQuestionIndex);
+    }
+
+    @Override
+    protected void onPause() { // 當畫面暫時離開
+        super.onPause();
+        Log.d(this.toString(), "onPause , index = " + sQuestionIndex);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(this.toString(), "onStop , index = " + sQuestionIndex);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.d(this.toString(), "onDestroy , index = " + sQuestionIndex);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(this.toString(), "onRestart , index = " + sQuestionIndex);
+    }
+
+    // 索引編號歸零
+    public static void resetQuestionIndex() {
+        sQuestionIndex = 0;
+        sLastQuestionIndex = 0;
     }
 
     // 子類別實現以下功能

@@ -1,6 +1,8 @@
-package com.example.android.lab07_activities;
+package com.example.android.lab07_activities.adapter;
 
 import android.content.res.Resources;
+
+import com.example.android.lab07_activities.myapp.MyApp;
 
 public class QuestionAdapterFactory { // 轉接器工廠
     // 靜態成員
