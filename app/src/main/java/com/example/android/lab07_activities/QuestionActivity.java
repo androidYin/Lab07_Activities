@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -67,10 +68,10 @@ public abstract class QuestionActivity extends AppCompatActivity {
             sAdapter = QuestionAdapterFactory.getQuestionAdapter();
         }
 
-        m_tv_question.setText(sAdapter.getQuestion(sQuestionIndex));
-        m_radio_a.setText(sAdapter.getQuestionOptionsA(sQuestionIndex));
-        m_radio_b.setText(sAdapter.getQuestionOptionsB(sQuestionIndex));
-        m_radio_c.setText(sAdapter.getQuestionOptionsC(sQuestionIndex));
+        m_tv_question.setText(Html.fromHtml(sAdapter.getQuestion(sQuestionIndex).toString()));
+        m_radio_a.setText(Html.fromHtml(sAdapter.getQuestionOptionsA(sQuestionIndex).toString()));
+        m_radio_b.setText(Html.fromHtml(sAdapter.getQuestionOptionsB(sQuestionIndex).toString()));
+        m_radio_c.setText(Html.fromHtml(sAdapter.getQuestionOptionsC(sQuestionIndex).toString()));
     }
 
     // 按下 BACK

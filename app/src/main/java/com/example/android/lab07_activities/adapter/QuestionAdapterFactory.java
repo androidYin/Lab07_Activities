@@ -1,6 +1,7 @@
 package com.example.android.lab07_activities.adapter;
 
 import android.content.res.Resources;
+import android.util.Log;
 
 import com.example.android.lab07_activities.myapp.MyApp;
 
@@ -12,7 +13,13 @@ public class QuestionAdapterFactory { // 轉接器工廠
         if(adapter == null) {
             // 透過 MyApp 取得 Context，進一步取得 Resources
             Resources res = MyApp.getContext().getResources();
-            adapter = new QuestionFromStringResource(res);
+            //            adapter = new QuestionFromStringResource(res);
+            try {
+                adapter = new QuestionFromRawXml(res);
+
+            } catch(Exception e) {
+                Log.d("factory",e.toString());
+            }
         }
         return adapter;
     }
