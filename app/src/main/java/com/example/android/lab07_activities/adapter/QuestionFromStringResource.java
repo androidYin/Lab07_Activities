@@ -41,7 +41,7 @@ public class QuestionFromStringResource implements QuestionAdapter {
     @Override
     public CharSequence getQuestion(int index) {
         Question question = list.get(index); // 讀取一個 Question 物件
-        String text = question.getQuestion();
+        String text = question.getDescription();
         return Html.fromHtml(text); // 字串內容有 HTML 語法，需轉換
     }
 

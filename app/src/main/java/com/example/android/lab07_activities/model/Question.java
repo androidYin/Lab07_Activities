@@ -1,22 +1,34 @@
 package com.example.android.lab07_activities.model;
 
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
+
+@Root
 public class Question {
-    private String question;
+    @Element
+    private String description;
+    @Element
     private String optionA;
+    @Element
     private String optionB;
+    @Element
     private String optionC;
 
+    // 無參數建構子
+    public Question() {
+    }
+
     // 建構子
-    public Question(String question, String optionA, String optionB, String optionC) {
-        this.question = question;
+    public Question(String description, String optionA, String optionB, String optionC) {
+        this.description = description;
         this.optionA = optionA;
         this.optionB = optionB;
         this.optionC = optionC;
     }
 
     // getter
-    public String getQuestion() {
-        return question;
+    public String getDescription() {
+        return description;
     }
 
     public String getOptionA() {
