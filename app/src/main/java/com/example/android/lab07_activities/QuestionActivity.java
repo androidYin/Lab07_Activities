@@ -3,6 +3,7 @@ package com.example.android.lab07_activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -29,6 +30,8 @@ public abstract class QuestionActivity extends AppCompatActivity
     private Button m_btn_back;
     private Button m_btn_next;
 
+    private ContentLoadingProgressBar m_pgb_loading;
+
     private static int sLastQuestionIndex;   // 上個畫面的 index
     private static int sQuestionIndex = 0;   // 只需要一個 index，所以宣告為靜態
     private static QuestionAdapter sAdapter; // 只需要一個 adapter，所以宣告為靜態
@@ -37,9 +40,14 @@ public abstract class QuestionActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
+        initContentLoadingProgressBar();
         initQuestions();
         initBackNextButtons();
         Log.d(this.toString(), "onCreate , index = " + sQuestionIndex);
+    }
+
+    private void initContentLoadingProgressBar() {
+        m_pgb_loading = (ContentLoadingProgressBar)findViewById(R.id.pgb_loading);
     }
 
      // 抑制 setVisibility() 錯誤訊息
@@ -67,22 +75,25 @@ public abstract class QuestionActivity extends AppCompatActivity
 
         // 題目 與 選項
         if(sAdapter == null) {
+            Log.d("sAdapter", "null");
 //            sAdapter = QuestionAdapterFactory.getQuestionAdapter();
 //            sUserAnswers = new UserAnswers(sAdapter.getQuestionCount());
             // Factory 無法立即回傳 Adapter，所以需要傳入一個能收結果的物件(實作了 Receiver)
             QuestionAdapterFactory.getQuestionAdapter(this); // Activity自己實作了 Receiver
         }
+        updateQuestionText();
     }
 
     // 實現 QuestionAdapterFactory.CallBack 能接收 adapter
     public void receiveQuestionAdapter(QuestionAdapter adapter){
         sAdapter = adapter;
-        // 將轉圈的 View 設為 消失
-        findViewById(R.id.pgb_loading).setVisibility(View.GONE);
         updateQuestionText(); // 畫面顯示題目資訊
     }
 
     private void updateQuestionText() {
+        if(sAdapter==null) { return; }
+        // 將轉圈的 View 設為 消失
+        m_pgb_loading.setVisibility(View.GONE);
         m_tv_question.setText(Html.fromHtml(sAdapter.getQuestion(sQuestionIndex).toString()));
         m_radio_a.setText(Html.fromHtml(sAdapter.getQuestionOptionsA(sQuestionIndex).toString()));
         m_radio_b.setText(Html.fromHtml(sAdapter.getQuestionOptionsB(sQuestionIndex).toString()));
