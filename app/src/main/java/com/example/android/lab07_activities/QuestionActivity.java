@@ -74,24 +74,24 @@ public abstract class QuestionActivity extends AppCompatActivity
         m_tv_no.setText(no);
 
         // 題目 與 選項
-        if(sAdapter == null) {
+        if(sAdapter == null) { // 畫面 2 執行時不會是 null
             Log.d("sAdapter", "null");
 //            sAdapter = QuestionAdapterFactory.getQuestionAdapter();
 //            sUserAnswers = new UserAnswers(sAdapter.getQuestionCount());
             // Factory 無法立即回傳 Adapter，所以需要傳入一個能收結果的物件(實作了 Receiver)
             QuestionAdapterFactory.getQuestionAdapter(this); // Activity自己實作了 Receiver
         }
-        updateQuestionText();
+        updateQuestionText(); // 畫面 1 雖然不需要，但畫面 2 3 需要透過此方法顯示題目
     }
 
-    // 實現 QuestionAdapterFactory.CallBack 能接收 adapter
+    // 實現 QuestionAdapterFactory.Receiver 能接收 adapter
     public void receiveQuestionAdapter(QuestionAdapter adapter){
         sAdapter = adapter;
-        updateQuestionText(); // 畫面顯示題目資訊
+        updateQuestionText(); // 畫面1 顯示題目資訊
     }
 
     private void updateQuestionText() {
-        if(sAdapter==null) { return; }
+        if(sAdapter==null) { return; } // 畫面1 執行時還是 null ，直接 return
         // 將轉圈的 View 設為 消失
         m_pgb_loading.setVisibility(View.GONE);
         m_tv_question.setText(Html.fromHtml(sAdapter.getQuestion(sQuestionIndex).toString()));
