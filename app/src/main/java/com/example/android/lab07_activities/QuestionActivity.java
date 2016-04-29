@@ -1,7 +1,9 @@
 package com.example.android.lab07_activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.IntDef;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,9 +19,18 @@ import com.example.android.lab07_activities.adapter.QuestionAdapterFactory;
 import com.example.android.lab07_activities.model.UserAnswers;
 import com.example.android.lab07_activities.myapp.MyApp;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 // abstract activity 不需要宣告在 manifest
 public abstract class QuestionActivity extends AppCompatActivity
         implements QuestionAdapterFactory.Receiver {
+
+    public static final String FILENAME = "QuestionActitivy_UserAnswers";
+    private static final String TAG = "QuestionActivity";
 
     private TextView m_tv_no;
     private TextView m_tv_question;
@@ -35,6 +46,75 @@ public abstract class QuestionActivity extends AppCompatActivity
     private static int sLastQuestionIndex;   // 上個畫面的 index
     private static int sQuestionIndex = 0;   // 只需要一個 index，所以宣告為靜態
     private static QuestionAdapter sAdapter; // 只需要一個 adapter，所以宣告為靜態
+    private static UserAnswers sUserAnswers;
+
+    // getter
+    public static UserAnswers getsUserAnswers() {
+        return sUserAnswers;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    private void saveData() {
+        Log.d(TAG, "saveData() serialize");
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
+        try {
+            // openFileOutput() 繼承自 Context ， Activity 繼承自 Context
+            fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            oos = new ObjectOutputStream(fos);
+            // 儲存 Activity 中的欄位資訊 (非 UI 部分)
+            oos.writeInt(sQuestionIndex);
+            oos.writeInt(sLastQuestionIndex);
+            oos.writeObject(sUserAnswers);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.toString());
+        } finally {
+            if(oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+        }
+
+    }
+
+    private void resotreData() {
+
+        Log.d(TAG, "restoreData() deserialize");
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+        try {
+            // openFileInput() 繼承自 Context ， Activity 繼承自 Context
+            fis = openFileInput(FILENAME);
+            ois = new ObjectInputStream(fis);
+            sQuestionIndex = ois.readInt();
+            sLastQuestionIndex = ois.readInt();
+            sUserAnswers = (UserAnswers) ois.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, e.toString());
+        } finally {
+            if(ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +166,12 @@ public abstract class QuestionActivity extends AppCompatActivity
 
     // 實現 QuestionAdapterFactory.Receiver 能接收 adapter
     public void receiveQuestionAdapter(QuestionAdapter adapter){
+        Log.d(TAG, "receiveQuestionAdapter");
+        MyApp.setAdapter(adapter); // 避免將來重複下載，寄放在 MyApp
         sAdapter = adapter;
+        if(sUserAnswers == null) {
+            sUserAnswers = new UserAnswers(sAdapter.getQuestionCount());
+        }
         updateQuestionText(); // 畫面1 顯示題目資訊
     }
 
@@ -140,7 +225,8 @@ public abstract class QuestionActivity extends AppCompatActivity
     // 按下 RadioButton 按鈕
     public void click(View view) {
         RadioButton radio = (RadioButton)view;
-        UserAnswers userAnswers = MyApp.getUserAnswers();
+//        UserAnswers userAnswers = MyApp.getUserAnswers(); // 現在 Activity 自己管理 UserAnswers
+        UserAnswers userAnswers = sUserAnswers;
         switch (radio.getId()) {
             case R.id.radio_a:
                 userAnswers.setAnswer(sQuestionIndex, 'A', radio.getText());
@@ -166,6 +252,11 @@ public abstract class QuestionActivity extends AppCompatActivity
     protected void onResume() { // 當畫面恢復(重現)，執行轉場動畫
         super.onResume();
         Log.d(this.toString(), "onResume , index = " + sQuestionIndex);
+
+        resotreData();
+        initQuestions();
+        initBackNextButtons();
+
         if(sQuestionIndex < sLastQuestionIndex) { // 比較當前的 index 與 上個 Activity 的 index
             overridePendingTransition(R.anim.push_left_in, R.anim.push_right_out);
         } else if(sQuestionIndex > sLastQuestionIndex) {
@@ -183,7 +274,7 @@ public abstract class QuestionActivity extends AppCompatActivity
     protected void onPause() { // 當畫面暫時離開
         super.onPause();
         Log.d(this.toString(), "onPause , index = " + sQuestionIndex);
-
+        saveData();
     }
 
     @Override

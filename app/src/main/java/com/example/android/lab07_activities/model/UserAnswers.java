@@ -1,6 +1,8 @@
 package com.example.android.lab07_activities.model;
 
-public class UserAnswers {
+import java.io.Serializable;
+
+public class UserAnswers implements Serializable {
     private char[] answers;                 // 存放 3 個答案 (字元陣列)
     private CharSequence[] descriptions;    // 存放 3 個描述答案的字串
 
